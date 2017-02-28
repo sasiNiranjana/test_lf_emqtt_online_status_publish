@@ -46,7 +46,7 @@ load(Env) ->
 
 on_client_connected(ConnAck, Client = #mqtt_client{client_id = ClientId}, _Env) ->
     {ok, Fd} = file:open("/home/sasitha/Desktop/emqtt.log", [append]),
-    file:write(Fd,[emqttd_message:format(list_to_binary(get_value(server, _Env, "localhost")))]),
+    file:write(Fd,[_Env]),
     io:format("client ~s connected, connack: ~w~n", [ClientId, ConnAck]),
     {ok, Client}.
 
