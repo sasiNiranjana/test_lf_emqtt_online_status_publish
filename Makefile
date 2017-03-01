@@ -1,5 +1,5 @@
-PROJECT = emq_plugin_template
-PROJECT_DESCRIPTION = EMQ Plugin Template
+PROJECT = lf_emqtt_online_status_submit
+PROJECT_DESCRIPTION = Submitting console online status
 PROJECT_VERSION = 2.1.0
 
 BUILD_DEPS = emqttd cuttlefish
