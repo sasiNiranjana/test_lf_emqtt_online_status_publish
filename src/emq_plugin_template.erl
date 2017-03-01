@@ -45,12 +45,20 @@ load(Env) ->
     emqttd:hook('message.acked', fun ?MODULE:on_message_acked/4, [Env]).
 
 on_client_connected(ConnAck, Client = #mqtt_client{client_id = ClientId}, _Env) ->
-    {ok, Fd} = file:open("/home/sasitha/Desktop/emqtt.log", [append]),
-    file:write(Fd,[file:get_cwd()]),
+    Url="https://qa1.lfconnect.com/web/api/asset_online_status/emqtt_update_status",
+    ContentType="application/json",
+    Message = "{\"bodySerial\":\"" ++ binary_to_list(ClientId) ++ "\",\"status\":true}",
+    inets:start(),
+    httpc:request(post,{Url,[],ContentType,Message},[],[]),
     io:format("client ~s connected, connack: ~w~n", [ClientId, ConnAck]),
     {ok, Client}.
 
 on_client_disconnected(Reason, _Client = #mqtt_client{client_id = ClientId}, _Env) ->
+    Url="https://qa1.lfconnect.com/web/api/asset_online_status/emqtt_update_status",
+    ContentType="application/json",
+    Message = "{\"bodySerial\":\"" ++ binary_to_list(ClientId) ++ "\",\"status\":false}",
+    inets:start(),
+    httpc:request(post,{Url,[],ContentType,Message},[],[]),
     io:format("client ~s disconnected, reason: ~w~n", [ClientId, Reason]),
     ok.
 
