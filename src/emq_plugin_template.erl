@@ -51,11 +51,11 @@ on_client_connected(ConnAck, Client = #mqtt_client{client_id = ClientId}, _Env) 
     %inets:start(),
     %httpc:request(post,{Url,[],ContentType,Message},[],[]),
     %{ok,Server}=application:get_env(emq_plugin_template, server),
-    LFUrl="http://localhost:8080/lfservices/api/asset_online_status/emqtt_update_status",
-    LFContentType="application/json",
-    LFMessage = "{\"bodySerial\":\"" ++ binary_to_list(ClientId) ++ "\",\"status\":true}",
+    Url="http://localhost:8080/lfservices/api/asset_online_status/emqtt_update_status",
+    ContentType="application/json",
+    Message = "{\"bodySerial\":\"" ++ binary_to_list(ClientId) ++ "\",\"status\":true}",
     inets:start(),
-    httpc:request(post,{LFUrl,[],LFContentType,LFMessage},[],[]),
+    httpc:request(post,{Url,[],ContentType,Message},[],[]),
     io:format("client ~s connected, connack: ~w~n", [ClientId, ConnAck]),
     {ok, Client}.
 
@@ -64,7 +64,7 @@ on_client_disconnected(Reason, _Client = #mqtt_client{client_id = ClientId}, _En
     %ContentType="application/json",
     %Message = "{\"bodySerial\":\"" ++ binary_to_list(ClientId) ++ "\",\"status\":false}",
     %inets:start(),
-    httpc:request(post,{Url,[],ContentType,Message},[],[]),
+    %httpc:request(post,{Url,[],ContentType,Message},[],[]),
     io:format("client ~s disconnected, reason: ~w~n", [ClientId, Reason]),
     ok.
 
