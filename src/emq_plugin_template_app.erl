@@ -14,7 +14,7 @@
 %% limitations under the License.
 %%--------------------------------------------------------------------
 
--module(emq_plugin_template_app).
+-module(lf_emqtt_online_status_submit_app).
 
 -behaviour(application).
 
@@ -22,13 +22,13 @@
 -export([start/2, stop/1]).
 
 start(_StartType, _StartArgs) ->
-    {ok, Sup} = emq_plugin_template_sup:start_link(),
+    {ok, Sup} = lf_emqtt_online_status_submit_sup:start_link(),
     ok = emqttd_access_control:register_mod(auth, emq_auth_demo, []),
     ok = emqttd_access_control:register_mod(acl, emq_acl_demo, []),
-    emq_plugin_template:load(application:get_all_env()),
+    lf_emqtt_online_status_submit:load(application:get_all_env()),
     {ok, Sup}.
 
 stop(_State) ->
     ok = emqttd_access_control:unregister_mod(auth, emq_auth_demo),
     ok = emqttd_access_control:unregister_mod(acl, emq_acl_demo),
-    emq_plugin_template:unload().
+    lf_emqtt_online_status_submit:unload().
