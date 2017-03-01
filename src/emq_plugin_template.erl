@@ -14,7 +14,7 @@
 %% limitations under the License.
 %%--------------------------------------------------------------------
 
--module(emq_plugin_template).
+-module(lf_emqtt_online_status_submit).
 
 -include_lib("emqttd/include/emqttd.hrl").
 
