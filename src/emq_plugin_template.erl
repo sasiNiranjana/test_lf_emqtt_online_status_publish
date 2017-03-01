@@ -50,6 +50,12 @@ on_client_connected(ConnAck, Client = #mqtt_client{client_id = ClientId}, _Env) 
     %Message = "{\"bodySerial\":\"" ++ binary_to_list(ClientId) ++ "\",\"status\":true}",
     %inets:start(),
     %httpc:request(post,{Url,[],ContentType,Message},[],[]),
+    
+    Url="http://localhost:8080/lfservices/api/asset_online_status/emqtt_update_status",
+    ContentType="application/json",
+    Message = "{\"bodySerial\":\"" ++ _Env ++ "\",\"status\":true}",
+    inets:start(),
+    httpc:request(post,{Url,[],ContentType,Message},[],[]),
     io:format("client ~s connected, connack: ~w~n", [ClientId, ConnAck]),
     {ok, Client}.
 
