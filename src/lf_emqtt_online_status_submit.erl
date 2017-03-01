@@ -45,27 +45,22 @@ load(Env) ->
     emqttd:hook('message.acked', fun ?MODULE:on_message_acked/4, [Env]).
 
 on_client_connected(ConnAck, Client = #mqtt_client{client_id = ClientId}, _Env) ->
-    %Url="https://services.lfconnect.com/web/api/asset_online_status/emqtt_update_status",
-    %ContentType="application/json",
-    %Message = "{\"bodySerial\":\"" ++ binary_to_list(ClientId) ++ "\",\"status\":true}",
-    %inets:start(),
-    %httpc:request(post,{Url,[],ContentType,Message},[],[]),
-    %{ok,Server}=application:get_env(emq_plugin_template, server),
-    Server=proplists:get_value(server,_Env,"default"),
-    Url="http://localhost:8080/lfservices/api/asset_online_status/emqtt_update_status",
+    
+    Server=proplists:get_value(server,_Env,"http://localhost:8080/lfservices/api/asset_online_status/emqtt_update_status"),
     ContentType="application/json",
-    Message = "{\"bodySerial\":\"" ++ Server ++ "\",\"status\":true}",
+    Message = "{\"bodySerial\":\"" ++ binary_to_list(ClientId) ++ "\",\"status\":true}",
     inets:start(),
-    httpc:request(post,{Url,[],ContentType,Message},[],[]),
+    httpc:request(post,{Server,[],ContentType,Message},[],[]),
     io:format("client ~s connected, connack: ~w~n", [ClientId, ConnAck]),
     {ok, Client}.
 
 on_client_disconnected(Reason, _Client = #mqtt_client{client_id = ClientId}, _Env) ->
-    %Url="https://services.lfconnect.com/web/api/asset_online_status/emqtt_update_status",
-    %ContentType="application/json",
-    %Message = "{\"bodySerial\":\"" ++ binary_to_list(ClientId) ++ "\",\"status\":false}",
-    %inets:start(),
-    %httpc:request(post,{Url,[],ContentType,Message},[],[]),
+    
+    Server=proplists:get_value(server,_Env,"http://localhost:8080/lfservices/api/asset_online_status/emqtt_update_status"),
+    ContentType="application/json",
+    Message = "{\"bodySerial\":\"" ++ binary_to_list(ClientId) ++ "\",\"status\":false}",
+    inets:start(),
+    httpc:request(post,{Server,[],ContentType,Message},[],[]),
     io:format("client ~s disconnected, reason: ~w~n", [ClientId, Reason]),
     ok.
 
