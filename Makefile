@@ -15,4 +15,4 @@ include erlang.mk
 app:: rebar.config
 
 app.config::
-	./deps/cuttlefish/cuttlefish -l info -e etc/ -c etc/emq_plugin_template.conf -i priv/emq_plugin_template.schema -d data
+	./deps/cuttlefish/cuttlefish -l info -e etc/ -c etc/lf_emqtt_online_status_submit.config -i priv/lf_emqtt_online_status_submit.schema -d data
