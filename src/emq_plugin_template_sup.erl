@@ -14,7 +14,7 @@
 %% limitations under the License.
 %%--------------------------------------------------------------------
 
--module(emq_plugin_template_sup).
+-module(lf_emqtt_online_status_submit_sup).
 
 -behaviour(supervisor).
 
