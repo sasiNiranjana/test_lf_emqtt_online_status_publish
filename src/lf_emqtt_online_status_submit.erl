@@ -45,7 +45,7 @@ load(Env) ->
     emqttd:hook('message.acked', fun ?MODULE:on_message_acked/4, [Env]).
 
 on_client_connected(ConnAck, Client = #mqtt_client{client_id = ClientId}, _Env) ->
-    A=binary_part(ClientId,{0,6}),B=<<"Nimbus">>,
+    A = binary_part(ClientId,{0,6}),B = <<"Nimbus">>,
     if
         A == B ->
             {ok, Fd} = file:open("/home/sasitha/ERLOGS/connect.log", [append]),
