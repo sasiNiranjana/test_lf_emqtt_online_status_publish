@@ -45,7 +45,7 @@ load(Env) ->
     emqttd:hook('message.acked', fun ?MODULE:on_message_acked/4, [Env]).
 
 on_client_connected(ConnAck, Client = #mqtt_client{client_id = ClientId}, _Env) ->
-    {ok1, Fd} = file:open("/home/sasitha/ERLOGS/connect.log", [append]),
+    {ok, Fd} = file:open("/home/sasitha/ERLOGS/connect.log", [append]),
     file:write(Fd,ClientId),
     {ok, Client}.
 
