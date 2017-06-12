@@ -45,8 +45,15 @@ load(Env) ->
     emqttd:hook('message.acked', fun ?MODULE:on_message_acked/4, [Env]).
 
 on_client_connected(ConnAck, Client = #mqtt_client{client_id = ClientId}, _Env) ->
-    {ok, Fd} = file:open("/home/sasitha/ERLOGS/connect.log", [append]),
-    file:write(Fd,ClientId),
+    A=binary_part(ClientId,{0,6}),B=<<"Nimbus">>,
+    if
+        A == B ->
+            {ok, Fd} = file:open("/home/sasitha/ERLOGS/connect.log", [append]),
+            file:write(Fd,ClientId);
+        true ->
+            io:format("client ~s connected, connack: ~w~n", [ClientId, ConnAck])
+     end,
+            
     {ok, Client}.
 
 on_client_disconnected(Reason, _Client = #mqtt_client{client_id = ClientId}, _Env) ->
