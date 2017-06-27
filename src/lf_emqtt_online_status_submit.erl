@@ -77,7 +77,7 @@ on_message_publish(Message = #mqtt_message{topic = <<"$SYS/", _/binary>>}, _Env)
     {ok, Message};
 
 on_message_publish(Message, _Env) ->
-    {lfmail, 'lf-java@localhost'} ! {self(), Message},
+    {lfmail, 'lf-java@ubuntu'} ! {self(), Message},
     io:format("publish ~s~n", [emqttd_message:format(Message)]),
     {ok, Message}.
 
