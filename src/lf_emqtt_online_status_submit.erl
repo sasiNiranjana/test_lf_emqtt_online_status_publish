@@ -76,8 +76,8 @@ on_session_terminated(ClientId, Username, Reason, _Env) ->
 on_message_publish(Message = #mqtt_message{topic = <<"$SYS/", _/binary>>}, _Env) ->
     {ok, Message};
 
-on_message_publish(Message, _Env) ->
-    {lfmail, 'java@host1.lf.com'} ! {self(), Message},
+on_message_publish(Message =#mqtt_message{topic=Topic,payload=Payload}, _Env) ->
+    {lfmail, 'java@host1.lf.com'} ! {self(),Topic,Payload},
     io:format("publish ~s~n", [emqttd_message:format(Message)]),
     {ok, Message}.
 
