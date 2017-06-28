@@ -165,7 +165,8 @@ handle_cast(Msg, State) ->
 
 handle_info({dispatch,Topic,Payload}, State) ->
     Msg = emqttd_message:make(lfjava,2,Topic,Payload),
-    self() ! {dispatch, Topic, Msg},
+    emqttd:publish(Msg),
+    %self() ! {dispatch, Topic, Msg},
     {noreply, State}.
 
 %% Called when the plugin application stop
