@@ -121,7 +121,10 @@ on_message_publish(Message =#mqtt_message{topic=Topic,payload=Payload}, _Env) ->
         (Topic =:= <<"lf/verify">> ; Topic =:= <<"lf/update">> ; Topic =:= <<"lf/stats">>) ->
             {lfmail, JavaServer} ! {self(),Topic,Payload},
             io:format("publish ~s~n", [emqttd_message:format(Message)]),
-            {ok, Message},
+            {ok, Message};
+        true ->
+            io:format("publish ~s~n", [emqttd_message:format(Message)]),
+            {ok, Message}
     end.
 
 on_message_delivered(ClientId, Username, Message, _Env) ->
@@ -145,7 +148,7 @@ start_link(Env) ->
 %% gen_server Callbacks
 %%--------------------------------------------------------------------
 
-init([Env]) -> {ok,#state{}}.
+init([_Env]) -> {ok,#state{}}.
 
 code_change(_OldVsn, State, _Extra) -> {ok, State}.
 
@@ -160,7 +163,7 @@ handle_cast(Msg, State) ->
 handle_info({dispatch,Topic,Payload}, State) ->
     Msg = emqttd_message:make(lfjava,2,Topic,Payload),
     self() ! {dispatch, Topic, Msg},
-    {noreply, State, hibernate}.
+    {noreply, State}.
 
 %% Called when the plugin application stop
 unload() ->
