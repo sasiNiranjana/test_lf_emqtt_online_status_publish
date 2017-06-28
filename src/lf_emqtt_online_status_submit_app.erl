@@ -21,14 +21,12 @@
 %% Application callbacks
 -export([start/2, stop/1]).
 
-start(_StartType, _StartArgs) ->
-    {ok, Sup} = lf_emqtt_online_status_submit_sup:start_link(),
-    ok = emqttd_access_control:register_mod(auth, emq_auth_demo, []),
-    ok = emqttd_access_control:register_mod(acl, emq_acl_demo, []),
-    lf_emqtt_online_status_submit:load(application:get_all_env()),
+start(_Type, _Args) ->
+    Env = application:get_all_env(lf_emqtt_online_status_submit),
+    {ok, Sup} = lf_emqtt_online_status_submit_sup:start_link(Env),
+    lf_emqtt_online_status_submit:load(Env),
     {ok, Sup}.
 
 stop(_State) ->
-    ok = emqttd_access_control:unregister_mod(auth, emq_auth_demo),
-    ok = emqttd_access_control:unregister_mod(acl, emq_acl_demo),
-lf_emqtt_online_status_submit:unload().
+    lf_emqtt_online_status_submit:unload(),
+    ok.
