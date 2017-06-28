@@ -118,7 +118,7 @@ on_message_publish(Message = #mqtt_message{topic = <<"$SYS/", _/binary>>}, _Env)
 on_message_publish(Message =#mqtt_message{topic=Topic,payload=Payload}, _Env) ->
     JavaServer=proplists:get_value(javaserver,_Env,'java@host1.lf.com'),
     if
-        (Topic =:= <<"lf/verify">> ; Topic =:= <<"lf/update">> ; Topic =:= <<"lf/stats">>) ->
+        (Topic =:= <<"lf/verify">> or Topic =:= <<"lf/update">> or Topic =:= <<"lf/stats">>) ->
             {lfmail, JavaServer} ! {self(),Topic,Payload},
             io:format("publish ~s~n", [emqttd_message:format(Message)]),
             {ok, Message};
