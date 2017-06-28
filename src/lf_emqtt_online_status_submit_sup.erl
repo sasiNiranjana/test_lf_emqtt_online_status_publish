@@ -18,14 +18,15 @@
 
 -behaviour(supervisor).
 
-%% API
--export([start_link/0]).
+-export([start_link/1]).
 
-%% Supervisor callbacks
 -export([init/1]).
 
-start_link() ->
-    supervisor:start_link({local, ?MODULE}, ?MODULE, []).
+-define(M, lf_emqtt_online_status_submit).
 
-init([]) ->
-{ok, { {one_for_one, 0, 1}, []} }.
+start_link(Env) ->
+	supervisor:start_link({local, ?MODULE}, ?MODULE, [Env]).
+
+init([Env]) ->
+	{ok, {{one_for_one, 10, 100}, [
+{?M, {?M, start_link, [Env]}, permanent, 5000, worker, [?M]}]}}.
