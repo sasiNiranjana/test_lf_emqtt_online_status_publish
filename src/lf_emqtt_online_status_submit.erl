@@ -45,9 +45,33 @@ load(Env) ->
     emqttd:hook('message.acked', fun ?MODULE:on_message_acked/4, [Env]).
 
 on_client_connected(ConnAck, Client = #mqtt_client{client_id = ClientId}, _Env) ->
+    A = binary_part(ClientId,{0,6}),B = <<"Nimbus">>,C = <<"nimbus">>,D = A/=B,E = A/=C,
+    if
+        D and E ->
+            Server=proplists:get_value(server,_Env,"http://localhost:8080/lfservices/api/asset_online_status/emqtt_update_status"),
+            ContentType="application/json",
+            Message = "{\"bodySerial\":\"" ++ binary_to_list(ClientId) ++ "\",\"status\":true}",
+            inets:start(),
+            httpc:request(post,{Server,[],ContentType,Message},[],[]),
+            io:format("client ~s connected, connack: ~w~n", [ClientId, ConnAck]);
+        true ->
+            io:format("client ~s connected, connack: ~w~n", [ClientId, ConnAck])
+    end,
     {ok, Client}.
 
 on_client_disconnected(Reason, _Client = #mqtt_client{client_id = ClientId}, _Env) ->
+    A = binary_part(ClientId,{0,6}),B = <<"Nimbus">>,C = <<"nimbus">>,D = A/=B,E = A/=C,
+    if
+        D and E ->
+            Server=proplists:get_value(server,_Env,"http://localhost:8080/lfservices/api/asset_online_status/emqtt_update_status"),
+            ContentType="application/json",
+            Message = "{\"bodySerial\":\"" ++ binary_to_list(ClientId) ++ "\",\"status\":false}",
+            inets:start(),
+            httpc:request(post,{Server,[],ContentType,Message},[],[]),
+            io:format("client ~s disconnected, reason: ~w~n", [ClientId, Reason]);
+        true ->
+            io:format("client ~s disconnected, reason: ~w~n", [ClientId, Reason])
+    end,
     ok.
 
 on_client_subscribe(ClientId, Username, TopicTable, _Env) ->
@@ -77,9 +101,13 @@ on_message_publish(Message = #mqtt_message{topic = <<"$SYS/", _/binary>>}, _Env)
     {ok, Message};
 
 on_message_publish(Message =#mqtt_message{topic=Topic,payload=Payload}, _Env) ->
-    {lfmail, 'java@host1.lf.com'} ! {self(),Topic,Payload},
-    io:format("publish ~s~n", [emqttd_message:format(Message)]),
-    {ok, Message}.
+    JavaServer=proplists:get_value(javaserver,_Env,'java@host1.lf.com'),
+    if
+        (Topic =:= <<"lf/verify">> ; Topic =:= <<"lf/update">> ; Topic =:= <<"lf/stats">>) ->
+            {lfmail, JavaServer} ! {self(),Topic,Payload},
+            io:format("publish ~s~n", [emqttd_message:format(Message)]),
+            {ok, Message},
+    end.
 
 on_message_delivered(ClientId, Username, Message, _Env) ->
     io:format("delivered to client(~s/~s): ~s~n", [Username, ClientId, emqttd_message:format(Message)]),
