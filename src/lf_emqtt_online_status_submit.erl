@@ -16,7 +16,13 @@
 
 -module(lf_emqtt_online_status_submit).
 
+-behaviour(gen_server).
+
 -include_lib("emqttd/include/emqttd.hrl").
+
+-include_lib("emqttd/include/emqttd_internal.hrl").
+
+-include_lib("stdlib/include/ms_transform.hrl").
 
 -export([load/1, unload/0]).
 
@@ -29,6 +35,15 @@
 -export([on_session_created/3, on_session_subscribed/4, on_session_unsubscribed/4, on_session_terminated/4]).
 
 -export([on_message_publish/2, on_message_delivered/4, on_message_acked/4]).
+
+%% API Function Exports
+-export([start_link/1]).
+
+%% gen_server Function Exports
+-export([init/1, handle_call/3, handle_cast/2, handle_info/2,
+         terminate/2, code_change/3]).
+
+-record(state, {stats_fun, expired_after, stats_timer, expire_timer}).
 
 %% Called when the plugin application start
 load(Env) ->
@@ -116,6 +131,36 @@ on_message_delivered(ClientId, Username, Message, _Env) ->
 on_message_acked(ClientId, Username, Message, _Env) ->
     io:format("client(~s/~s) acked: ~s~n", [Username, ClientId, emqttd_message:format(Message)]),
     {ok, Message}.
+
+%%--------------------------------------------------------------------
+%% API
+%%--------------------------------------------------------------------
+
+%% @doc Start the retainer
+-spec(start_link(Env :: list()) -> {ok, pid()} | ignore | {error, any()}).
+start_link(Env) ->
+    gen_server:start_link({local, ?MODULE}, ?MODULE, [Env], []).
+
+%%--------------------------------------------------------------------
+%% gen_server Callbacks
+%%--------------------------------------------------------------------
+
+init([Env]) -> {ok,#state{}}.
+
+code_change(_OldVsn, State, _Extra) -> {ok, State}.
+
+terminate(_Reason, _State) -> ok.
+
+handle_call(Req, _From, State) ->
+    ?UNEXPECTED_REQ(Req, State).
+
+handle_cast(Msg, State) ->
+    ?UNEXPECTED_MSG(Msg, State).
+
+handle_info({dispatch,Topic,Payload}, State) ->
+    Msg = emqttd_message:make(lfjava,2,Topic,Payload),
+    self() ! {dispatch, Topic, Msg},
+    {noreply, State, hibernate}.
 
 %% Called when the plugin application stop
 unload() ->
