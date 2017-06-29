@@ -167,7 +167,7 @@ handle_info({dispatch,Topic,Payload}, State) ->
     Msg = emqttd_message:make(lfjava,2,Topic,Payload),
     emqttd:publish(Msg),
     {ok, Fd} = file:open("/home/sasitha/LFLOGS/erlfmodule/log", [append]), 
-    file:write(Fd,"New Line")
+    file:write(Fd,"Handle info called\n")
     %self() ! {dispatch, Topic, Msg},
     {noreply, State}.
 
