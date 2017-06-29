@@ -122,7 +122,7 @@ on_message_publish(Message =#mqtt_message{topic=Topic,payload=Payload}, _Env) ->
     C = Topic =:= <<"lf/stats">>,
     if
         (A or B or C) ->
-            {lfmail, JavaServer} ! {self(),Topic,Payload},
+            {lfmail, JavaServer} ! {list_to_atom(lists:concat([?MODULE, "_", node()])),Topic,Payload},
             io:format("publish ~s~n", [emqttd_message:format(Message)]),
             {ok, Message};
         true ->
