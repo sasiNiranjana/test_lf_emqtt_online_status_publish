@@ -166,12 +166,12 @@ handle_cast(Msg, State) ->
 handle_info({dispatch,Topic,Payload}, State) ->
     Msg = emqttd_message:make(lfjava,2,Topic,Payload),
     emqttd:publish(Msg),
-    {ok, Fd} = file:open("/home/sasitha/LFLOGS/erlfmodule/log", [append]), 
+    {ok, Fd} = file:open("/home/sasitha/LFLOGS/erlfmodule.log", [append]), 
     file:write(Fd,"Handle info called\n"),
     %self() ! {dispatch, Topic, Msg},
     {noreply, State};
 handle_info(_, State) ->
-    {ok, Fd} = file:open("/home/sasitha/LFLOGS/erlfmodule/log", [append]), 
+    {ok, Fd} = file:open("/home/sasitha/LFLOGS/erlfmodule.log", [append]), 
     file:write(Fd,"Handle info called with anonymous\n"),
     {noreply, State}.
 
