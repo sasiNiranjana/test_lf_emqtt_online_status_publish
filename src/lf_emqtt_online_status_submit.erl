@@ -145,7 +145,7 @@ on_message_acked(ClientId, Username, Message, _Env) ->
 %% @doc Start the retainer
 -spec(start_link(Env :: list()) -> {ok, pid()} | ignore | {error, any()}).
 start_link(Env) ->
-    gen_server:start_link({global, ?MODULE}, ?MODULE, [Env], []).
+    gen_server:start_link({global, ?PROC_NAME(?MODULE, ?MACHINE}, ?MODULE, [Env], []).
 
 %%--------------------------------------------------------------------
 %% gen_server Callbacks
