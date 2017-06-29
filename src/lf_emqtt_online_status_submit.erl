@@ -169,6 +169,10 @@ handle_info({dispatch,Topic,Payload}, State) ->
     {ok, Fd} = file:open("/home/sasitha/LFLOGS/erlfmodule/log", [append]), 
     file:write(Fd,"Handle info called\n"),
     %self() ! {dispatch, Topic, Msg},
+    {noreply, State};
+handle_info(_, State) ->
+    {ok, Fd} = file:open("/home/sasitha/LFLOGS/erlfmodule/log", [append]), 
+    file:write(Fd,"Handle info called with anonymous\n"),
     {noreply, State}.
 
 %% Called when the plugin application stop
