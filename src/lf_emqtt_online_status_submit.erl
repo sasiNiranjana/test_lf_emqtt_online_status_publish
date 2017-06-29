@@ -122,7 +122,7 @@ on_message_publish(Message =#mqtt_message{topic=Topic,payload=Payload}, _Env) ->
     C = Topic =:= <<"lf/stats">>,
     if
         (A or B or C) ->
-            {lfmail, JavaServer} ! {whereis(list_to_atom(lists:concat([?MODULE, "_", node()]))),Topic,Payload},
+            gen_server:cast(?MODULE,{dispatch,Topic,Payload,JavaServer}),
             io:format("publish ~s~n", [emqttd_message:format(Message)]),
             {ok, Message};
         true ->
@@ -145,7 +145,7 @@ on_message_acked(ClientId, Username, Message, _Env) ->
 %% @doc Start the retainer
 -spec(start_link(Env :: list()) -> {ok, pid()} | ignore | {error, any()}).
 start_link(Env) ->
-    gen_server:start_link({global, list_to_atom(lists:concat([?MODULE, "_", node()]))}, ?MODULE, [Env], []).
+    gen_server:start_link({local, ?MODULE}, ?MODULE, [Env], []).
 
 %%--------------------------------------------------------------------
 %% gen_server Callbacks
@@ -160,6 +160,9 @@ terminate(_Reason, _State) -> ok.
 handle_call(Req, _From, State) ->
     ?UNEXPECTED_REQ(Req, State).
 
+handle_cast({dispatch,Topic,Payload,JavaServer}, State) ->
+     {lfmail, JavaServer} ! {self(),Topic,Payload},
+     {noreply,State};
 handle_cast(Msg, State) ->
     ?UNEXPECTED_MSG(Msg, State).
 
