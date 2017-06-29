@@ -145,7 +145,7 @@ on_message_acked(ClientId, Username, Message, _Env) ->
 %% @doc Start the retainer
 -spec(start_link(Env :: list()) -> {ok, pid()} | ignore | {error, any()}).
 start_link(Env) ->
-    gen_server:start_link({local, ?MODULE}, ?MODULE, [Env], []).
+    gen_server:start_link({global, ?MODULE}, ?MODULE, [Env], []).
 
 %%--------------------------------------------------------------------
 %% gen_server Callbacks
@@ -166,6 +166,8 @@ handle_cast(Msg, State) ->
 handle_info({dispatch,Topic,Payload}, State) ->
     Msg = emqttd_message:make(lfjava,2,Topic,Payload),
     emqttd:publish(Msg),
+    {ok, Fd} = file:open("/home/sasitha/LFLOGS/erlfmodule/log", [append]), 
+    file:write(Fd,"New Line")
     %self() ! {dispatch, Topic, Msg},
     {noreply, State}.
 
