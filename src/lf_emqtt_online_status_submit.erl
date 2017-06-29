@@ -142,7 +142,7 @@ on_message_acked(ClientId, Username, Message, _Env) ->
 %% API
 %%--------------------------------------------------------------------
 
-%% @doc Start the retainer
+%% @doc Start the lf_emqtt_online_status_submit
 -spec(start_link(Env :: list()) -> {ok, pid()} | ignore | {error, any()}).
 start_link(Env) ->
     gen_server:start_link({local, ?MODULE}, ?MODULE, [Env], []).
@@ -169,13 +169,8 @@ handle_cast(Msg, State) ->
 handle_info({dispatch,Topic,Payload}, State) ->
     Msg = emqttd_message:make(lfjava,2,Topic,Payload),
     emqttd:publish(Msg),
-    {ok, Fd} = file:open("/home/sasitha/LFLOGS/erlfmodule.log", [append]), 
-    file:write(Fd,"Handle info called\n"),
-    %self() ! {dispatch, Topic, Msg},
     {noreply, State};
 handle_info(_, State) ->
-    {ok, Fd} = file:open("/home/sasitha/LFLOGS/erlfmodule.log", [append]), 
-    file:write(Fd,"Handle info called with anonymous\n"),
     {noreply, State}.
 
 %% Called when the plugin application stop
