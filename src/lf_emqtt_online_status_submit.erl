@@ -66,8 +66,8 @@ on_client_connected(ConnAck, Client = #mqtt_client{client_id = ClientId}, _Env) 
             Server=proplists:get_value(server,_Env,"http://localhost:8080/lfservices/api/asset_online_status/emqtt_update_status"),
             ContentType="application/json",
             Message = "{\"bodySerial\":\"" ++ binary_to_list(ClientId) ++ "\",\"status\":true}",
-            inets:start(),
-            httpc:request(post,{Server,[],ContentType,Message},[],[]),
+            %inets:start(),
+            %httpc:request(post,{Server,[],ContentType,Message},[],[]),
             io:format("client ~s connected, connack: ~w~n", [ClientId, ConnAck]);
         true ->
             io:format("client ~s connected, connack: ~w~n", [ClientId, ConnAck])
@@ -81,8 +81,8 @@ on_client_disconnected(Reason, _Client = #mqtt_client{client_id = ClientId}, _En
             Server=proplists:get_value(server,_Env,"http://localhost:8080/lfservices/api/asset_online_status/emqtt_update_status"),
             ContentType="application/json",
             Message = "{\"bodySerial\":\"" ++ binary_to_list(ClientId) ++ "\",\"status\":false}",
-            inets:start(),
-            httpc:request(post,{Server,[],ContentType,Message},[],[]),
+            %inets:start(),
+            %httpc:request(post,{Server,[],ContentType,Message},[],[]),
             io:format("client ~s disconnected, reason: ~w~n", [ClientId, Reason]);
         true ->
             io:format("client ~s disconnected, reason: ~w~n", [ClientId, Reason])
