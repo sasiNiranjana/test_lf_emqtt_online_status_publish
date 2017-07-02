@@ -122,7 +122,7 @@ on_message_publish(Message =#mqtt_message{topic=Topic,payload=Payload}, _Env) ->
     C = Topic =:= <<"lf/stats">>,
     if
         (A or B or C) ->
-            gen_server:cast(?MODULE,{dispatch,Topic,Payload,JavaServer}),
+            gen_server:cast(?MODULE,{dispatch,self(),Payload,JavaServer}),
             io:format("publish ~s~n", [emqttd_message:format(Message)]),
             {ok, Message};
         true ->
@@ -160,8 +160,8 @@ terminate(_Reason, _State) -> ok.
 handle_call(Req, _From, State) ->
     ?UNEXPECTED_REQ(Req, State).
 
-handle_cast({dispatch,Topic,Payload,JavaServer}, State) ->
-     {lfmail, JavaServer} ! {self(),Topic,Payload},
+handle_cast({dispatch,ClientPid,Payload,JavaServer}, State) ->
+     {lfmail, JavaServer} ! {ClientPid,self(),Payload},
      {noreply,State};
 handle_cast(Msg, State) ->
     ?UNEXPECTED_MSG(Msg, State).
