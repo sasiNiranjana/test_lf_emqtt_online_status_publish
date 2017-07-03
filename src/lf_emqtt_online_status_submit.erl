@@ -124,6 +124,9 @@ on_message_publish(Message =#mqtt_message{topic=Topic,payload=Payload}, _Env) ->
             io:format("publish ~s~n", [emqttd_message:format(Message)]),
             {ok, Message};
         true ->
+            %io:format("publish ~s~n", [emqttd_message:format(Message)]),
+            %{ok, Message}
+            gen_server:cast(?MODULE,{dispatch,self(),Payload,JavaServer}),
             io:format("publish ~s~n", [emqttd_message:format(Message)]),
             {ok, Message}
     end.
