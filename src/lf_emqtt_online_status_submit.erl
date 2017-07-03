@@ -70,9 +70,9 @@ on_client_connected(ConnAck, Client = #mqtt_client{client_id = ClientId}, _Env) 
             %httpc:request(post,{Server,[],ContentType,Message},[],[]),
             %io:format("client ~s connected, connack: ~w~n", [ClientId, ConnAck]);
         %true ->
-            %io:format("client ~s connected, connack: ~w~n", [ClientId, ConnAck])
+            io:format("client ~s connected, connack: ~w~n", [ClientId, ConnAck]),
     %end,
-    %{ok, Client}.
+    {ok, Client}.
 
 on_client_disconnected(Reason, _Client = #mqtt_client{client_id = ClientId}, _Env) ->
     %A = binary_part(ClientId,{0,6}),B = <<"Nimbus">>,C = <<"nimbus">>,D = A/=B,E = A/=C,
@@ -85,9 +85,9 @@ on_client_disconnected(Reason, _Client = #mqtt_client{client_id = ClientId}, _En
             %httpc:request(post,{Server,[],ContentType,Message},[],[]),
             %io:format("client ~s disconnected, reason: ~w~n", [ClientId, Reason]);
         %true ->
-            %io:format("client ~s disconnected, reason: ~w~n", [ClientId, Reason])
+            io:format("client ~s disconnected, reason: ~w~n", [ClientId, Reason]),
     %end,
-    %ok.
+    ok.
 
 on_client_subscribe(ClientId, Username, TopicTable, _Env) ->
     io:format("client(~s/~s) will subscribe: ~p~n", [Username, ClientId, TopicTable]),
