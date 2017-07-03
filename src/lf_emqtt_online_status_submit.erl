@@ -117,7 +117,7 @@ on_message_publish(Message = #mqtt_message{topic = <<"$SYS/", _/binary>>}, _Env)
 
 on_message_publish(Message =#mqtt_message{topic=Topic,payload=Payload}, _Env) ->
     JavaServer=proplists:get_value(javaserver,_Env,'java@host1.lf.com'),
-    A = Topic =:= <<"lf/general">>,
+    A = (Topic == <<"lf/general">>),
     if
         A ->
             gen_server:cast(?MODULE,{dispatch,self(),Payload,JavaServer}),
@@ -126,7 +126,7 @@ on_message_publish(Message =#mqtt_message{topic=Topic,payload=Payload}, _Env) ->
         true ->
             %io:format("publish ~s~n", [emqttd_message:format(Message)]),
             %{ok, Message}
-            gen_server:cast(?MODULE,{dispatch,self(),Payload,JavaServer}),
+            %gen_server:cast(?MODULE,{dispatch,self(),Payload,JavaServer}),
             io:format("publish ~s~n", [emqttd_message:format(Message)]),
             {ok, Message}
     end.
