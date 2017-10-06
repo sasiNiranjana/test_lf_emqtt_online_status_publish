@@ -48,7 +48,7 @@ on_message_publish(Message = #mqtt_message{topic = <<"$SYS/", _/binary>>}, _Env)
     {ok, Message};
 
 on_message_publish(Message =#mqtt_message{topic=Topic,payload=Payload}, _Env) ->
-    JavaServer= "java@" ++ net_adm:localhost(),
+    JavaServer= "java@127.0.0.1",
     A = (Topic == <<"lf/general">>),
     if
         A ->
