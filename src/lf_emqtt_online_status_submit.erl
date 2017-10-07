@@ -71,7 +71,7 @@ start_link(Env) ->
 %%--------------------------------------------------------------------
 
 init([_Env]) ->
-    JavaNodeHost = list_to_binary("java@" ++ os:getenv("JAVA_NODE_SERVICE_HOST")),
+    JavaNodeHost = list_to_atom("java@" ++ os:getenv("JAVA_NODE_SERVICE_HOST")),
     {ok,#jnode{name = JavaNodeHost}}.
 
 code_change(_OldVsn, State, _Extra) -> {ok, State}.
