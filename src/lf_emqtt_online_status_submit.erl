@@ -37,7 +37,7 @@
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2,
          terminate/2, code_change/3]).
 
--record(state, {stats_fun, expired_after, stats_timer, expire_timer}).
+-record(jnode, {name}).
 
 %% Called when the plugin application start
 load(Env) ->
@@ -48,11 +48,10 @@ on_message_publish(Message = #mqtt_message{topic = <<"$SYS/", _/binary>>}, _Env)
     {ok, Message};
 
 on_message_publish(Message =#mqtt_message{topic=Topic,payload=Payload}, _Env) ->
-    JavaServer= 'java@javanodesvc',
     A = (Topic == <<"lf/general">>),
     if
         A ->
-            gen_server:cast(?MODULE,{dispatch,self(),Payload,JavaServer}),
+            gen_server:cast(?MODULE,{lfpush,self(),Payload}),
             {ok, Message};
         true ->
             {ok, Message}
@@ -71,7 +70,9 @@ start_link(Env) ->
 %% gen_server Callbacks
 %%--------------------------------------------------------------------
 
-init([_Env]) -> {ok,#state{}}.
+init([_Env]) ->
+    JavaNodeHost = list_to_binary("java@" ++ os:getenv("JAVA_NODE_SERVICE_HOST")),
+    {ok,#jnode{name = JavaNodeHost}}.
 
 code_change(_OldVsn, State, _Extra) -> {ok, State}.
 
@@ -80,8 +81,8 @@ terminate(_Reason, _State) -> ok.
 handle_call(Req, _From, State) ->
     ?UNEXPECTED_REQ(Req, State).
 
-handle_cast({dispatch,ClientPid,Payload,JavaServer}, State) ->
-     {lfmail, JavaServer} ! {ClientPid,self(),Payload},
+handle_cast({lfpush,ClientPid,Payload}, State) ->
+     {lfmail, State#jnode.name} ! {ClientPid,self(),Payload},
      {noreply,State};
 handle_cast(Msg, State) ->
     ?UNEXPECTED_MSG(Msg, State).
